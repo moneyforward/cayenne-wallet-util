@@ -3,17 +3,16 @@ package encryption_test
 import (
 	"testing"
 
-	. "github.com/mf-financial/wallet-util/encryption"
+	. "github.com/mf-financial/cayenne-wallet-util/encryption"
 )
 
 func TestEncryption(t *testing.T) {
-	size := 16
-	key := "8#75F%R+&a5ZvM_<"
-	iv := "@~wp-7hPs<WEx@R4"
+	key := "PBc1h^fjKd3Mrug3PBc1h^fjKd3Mrug3"
+	iv := "@~Pp-6sC3<M8x@RA"
 
 	str := "test@gmail.com"
 
-	NewCryptWithParam(size, key, iv)
+	NewCryptWithParam(key, iv)
 	crypt := GetCrypt()
 
 	result1 := crypt.EncryptBase64(str)

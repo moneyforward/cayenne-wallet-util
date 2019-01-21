@@ -15,11 +15,10 @@ func BenchmarkEncrypt(b *testing.B) {
 	//PASS
 	//ok  	github.com/mf-financial/wallet-util/encryption	6.162s
 
-	size := 16
-	key := "8#95F%R+&a5ZvM_<"
-	iv := "@~wp-8hPs<WEx@R4"
+	key := "PBc1h^fjKd3Mrug3PBc1h^fjKd3Mrug3"
+	iv := "@~Pp-6sC3<M8x@RA"
 
-	NewCryptWithParam(size, key, iv)
+	NewCryptWithParam(key, iv)
 	crypt := GetCrypt()
 
 	var benchmarks = []struct {
