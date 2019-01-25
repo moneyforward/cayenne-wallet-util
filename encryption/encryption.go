@@ -45,7 +45,7 @@ func GetDefaultKeyAndIv() (string, string) {
 // iv size should be 16
 func NewCryptWithParam(key, iv string) (*Crypt, error) {
 	if len(iv) != aes.BlockSize {
-		errors.Errorf("iv size should be %d", aes.BlockSize)
+		return nil, errors.Errorf("iv size should be %d", aes.BlockSize)
 	}
 
 	padded := make([]byte, len(key))
