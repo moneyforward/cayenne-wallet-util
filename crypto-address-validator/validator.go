@@ -20,8 +20,11 @@ const (
 
 // DecodeBTCAddr is to decode BTC address from string
 func DecodeBCHAddr(addr string, chainCfg *chaincfg.Params) (btcutil.Address, error) {
+	//Legacyアドレスはerrorを返す
 	address, err := bchutil.DecodeAddress(addr, chainCfg)
 	if err != nil {
+		//Note: when new cashAddr is given, that above DecodeAddress() will fail
+		//FIXME: testnet接続時でもmainnetのLegacyアドレスのValiationが通ってしまう
 		address, err = btcutil.DecodeAddress(addr, chainCfg)
 		if err != nil {
 			return nil, errors.Errorf("address [%s] is invalid", addr)
