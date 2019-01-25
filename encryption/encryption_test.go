@@ -16,7 +16,7 @@ func TestEncryption(t *testing.T) {
 	crypt := GetCrypt()
 
 	result1 := crypt.EncryptBase64(str)
-	if result1 != "SpJqzcL176g9aBq88pkKQw==" {
+	if result1 != "LsWFRCOS66xULAxQ1Sf4Xw==" {
 		t.Errorf("EncryptBase64() result: %s", result1)
 	}
 
