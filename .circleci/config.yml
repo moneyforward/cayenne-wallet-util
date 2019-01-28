@@ -1,0 +1,13 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.11.5
+
+    working_directory: /go/src/github.com/mf-financial/cayenne-wallet-util
+    steps:
+      - checkout
+      - run: go fmt `go list ./... | grep -v "/vendor/"`
+      - run: go vet `go list ./... | grep -v "/vendor/"`
+      - run: go get -u -d -t -v ./...
+      - run: go test -v ./...
