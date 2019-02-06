@@ -209,11 +209,3 @@ func (c *Crypt) generateEnvData(data []string) map[string][]string {
 	}
 	return envData
 }
-
-// ShowAndExit main.goから呼び出される埋め込み確認用
-func ShowAndExit() {
-	defaultKey, defaultIv := GetDefaultKeyAndIv()
-	fmt.Printf("defaultKey: %s, defaultIv: %s\n", defaultKey, defaultIv)
-
-	os.Exit(0)
-}
