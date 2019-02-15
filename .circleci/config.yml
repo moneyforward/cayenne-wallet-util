@@ -12,6 +12,7 @@ jobs:
     - run: go get -u github.com/client9/misspell/cmd/misspell
     - run: go get -u github.com/gordonklaus/ineffassign
     - run: go get github.com/securego/gosec/cmd/gosec/...
+    - run: go fmt `go list ./... | grep -v "/vendor/"`
     - run: go vet `go list ./... | grep -v "/vendor/"`
     - run: misspell `find . -name "*.go" | grep -v "/vendor/"`
     - run: ineffassign .
