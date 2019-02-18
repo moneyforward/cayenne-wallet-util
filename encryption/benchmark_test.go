@@ -18,8 +18,10 @@ func BenchmarkEncrypt(b *testing.B) {
 	key := "PBc1h^fjKd3Mrug3PBc1h^fjKd3Mrug3"
 	iv := "@~Pp-6sC3<M8x@RA"
 
-	NewCryptWithParam(key, iv)
-	crypt := GetCrypt()
+	crypt, err := NewCrypt(key, iv)
+	if err != nil {
+		b.Fatal(err)
+	}
 
 	var benchmarks = []struct {
 		name     string

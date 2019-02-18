@@ -27,7 +27,7 @@ func TestEncryptionNewCrypto(t *testing.T) {
 	}
 
 	for _, val := range tests {
-		_, err := NewCryptWithParam(val.key, val.iv)
+		_, err := NewCrypt(val.key, val.iv)
 		if err != nil && !val.isErr {
 			t.Errorf("[Test:%s]\n[key]%s, [iv]%s\n Unexpectedly error occorred. %v", val.description, val.key, val.iv, err)
 		}
@@ -56,7 +56,7 @@ func TestEncryptDecrypt(t *testing.T) {
 	}
 
 	for _, val := range tests {
-		crypt, err := NewCryptWithParam(val.key, val.iv)
+		crypt, err := NewCrypt(val.key, val.iv)
 		if err != nil {
 			t.Errorf("[Test:%s]\n[key]%s, [iv]%s\n failed to call NewCryptWithParam(). %v", val.description, val.key, val.iv, err)
 		}
