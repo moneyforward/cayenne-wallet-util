@@ -50,18 +50,6 @@ func NewCrypt(key, iv string) (*Crypt, error) {
 	return &cryptInfo, nil
 }
 
-// NewCryptWithEnv is setup with default settings.
-//func NewCryptWithEnv() (*Crypt, error) {
-//	key := os.Getenv("ENC_KEY")
-//	iv := os.Getenv("ENC_IV")
-//
-//	if key == "" || iv == "" {
-//		return nil, errors.New("set Environment Variable: ENC_KEY, ENC_IV")
-//	}
-//
-//	return NewCryptWithParam(key, iv)
-//}
-
 func (c *Crypt) padSlice(src []byte) []byte {
 	// src must be a multiple of block size
 	mult := int((len(src) / aes.BlockSize) + 1)
