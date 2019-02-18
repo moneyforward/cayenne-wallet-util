@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 
 	"github.com/mf-financial/wallet-util/env"
@@ -18,17 +17,6 @@ import (
 type Crypt struct {
 	cipher cipher.Block
 	iv     []byte
-}
-
-var (
-	cryptInfo  Crypt
-	defaultKey string
-	defaultIv  string
-)
-
-// GetDefaultKeyAndIv デバッグ利用、埋め込み変数の確認
-func GetDefaultKeyAndIv() (string, string) {
-	return defaultKey, defaultIv
 }
 
 // Creates a new encryption/decryption object
@@ -43,7 +31,7 @@ func GetDefaultKeyAndIv() (string, string) {
 // NewCryptWithParam is to create crypt instance
 // key size should be 16,24,32
 // iv size should be 16
-func NewCryptWithParam(key, iv string) (*Crypt, error) {
+func NewCrypt(key, iv string) (*Crypt, error) {
 	if len(iv) != aes.BlockSize {
 		return nil, errors.Errorf("iv size should be %d", aes.BlockSize)
 	}
@@ -57,37 +45,22 @@ func NewCryptWithParam(key, iv string) (*Crypt, error) {
 		return nil, err
 	}
 
-	cryptInfo = Crypt{block, bIv}
+	cryptInfo := Crypt{block, bIv}
 
 	return &cryptInfo, nil
 }
 
 // NewCryptWithEnv is setup with default settings.
-func NewCryptWithEnv() (*Crypt, error) {
-	key := os.Getenv("ENC_KEY")
-	iv := os.Getenv("ENC_IV")
-
-	if key == "" || iv == "" {
-		return nil, errors.New("set Environment Variable: ENC_KEY, ENC_IV")
-	}
-
-	return NewCryptWithParam(key, iv)
-}
-
-// NewCrypt is setup with default settings.
-func NewCrypt() (*Crypt, error) {
-
-	if defaultKey == "" || defaultIv == "" {
-		return nil, errors.New("set values for defaultKey, defaultIv when building")
-	}
-
-	return NewCryptWithParam(defaultKey, defaultIv)
-}
-
-// GetCrypt is to get crypt instance
-func GetCrypt() *Crypt {
-	return &cryptInfo
-}
+//func NewCryptWithEnv() (*Crypt, error) {
+//	key := os.Getenv("ENC_KEY")
+//	iv := os.Getenv("ENC_IV")
+//
+//	if key == "" || iv == "" {
+//		return nil, errors.New("set Environment Variable: ENC_KEY, ENC_IV")
+//	}
+//
+//	return NewCryptWithParam(key, iv)
+//}
 
 func (c *Crypt) padSlice(src []byte) []byte {
 	// src must be a multiple of block size

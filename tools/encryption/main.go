@@ -48,7 +48,7 @@ func init() {
 	}
 }
 
-func setup() {
+func setup() *encryption.Crypt {
 	key := os.Getenv("ENC_KEY")
 	iv := os.Getenv("ENC_IV")
 
@@ -57,16 +57,15 @@ func setup() {
 		os.Exit(1)
 	}
 
-	_, err := encryption.NewCryptWithParam(key, iv)
+	crypt, err := encryption.NewCrypt(key, iv)
 	if err != nil {
 		panic(err)
 	}
+	return crypt
 }
 
 func main() {
-	setup()
-
-	crypt := encryption.GetCrypt()
+	crypt := setup()
 
 	//encode
 	if *encode != "" {
