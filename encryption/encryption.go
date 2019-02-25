@@ -30,7 +30,6 @@ type Crypt struct {
 // NewCryptWithParam is to create crypt instance
 // key size should be 16,24,32
 // iv size should be 16
-//func NewCrypt(key, iv string) (*Crypt, error) {
 func NewCrypt(key, iv string) (Crypter, error) {
 	if len(iv) != aes.BlockSize {
 		return nil, errors.Errorf("iv size should be %d", aes.BlockSize)
