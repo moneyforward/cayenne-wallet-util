@@ -6,7 +6,6 @@ import (
 	"crypto/cipher"
 	"encoding/base64"
 	"fmt"
-	"io"
 	"strings"
 
 	"github.com/mf-financial/wallet-util/env"
@@ -31,7 +30,7 @@ type Crypt struct {
 // NewCryptWithParam is to create crypt instance
 // key size should be 16,24,32
 // iv size should be 16
-func NewCrypt(key, iv string) (*Crypt, error) {
+func NewCrypt(key, iv string) (Crypter, error) {
 	if len(iv) != aes.BlockSize {
 		return nil, errors.Errorf("iv size should be %d", aes.BlockSize)
 	}
@@ -78,28 +77,6 @@ func (c *Crypt) EncryptBase64(plainText string) string {
 	return base64
 }
 
-// EncryptStream is to encrypt blocks from reader, write results into writer
-func (c *Crypt) EncryptStream(reader io.Reader, writer io.Writer) error {
-	for {
-		buf := make([]byte, aes.BlockSize)
-		_, err := io.ReadFull(reader, buf)
-		if err != nil {
-			if err == io.EOF {
-				break
-			} else if err == io.ErrUnexpectedEOF {
-				// nothing
-			} else {
-				return err
-			}
-		}
-		cipher.NewCBCEncrypter(c.cipher, c.iv).CryptBlocks(buf, buf)
-		if _, err = writer.Write(buf); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 // Decrypt is to decrypt a slice of bytes, producing a new, freshly allocated slice
 // Source will be padded with null bytes if necessary
 func (c *Crypt) Decrypt(src []byte) []byte {
@@ -120,26 +97,6 @@ func (c *Crypt) DecryptBase64(base64String string) (string, error) {
 	}
 	decryptedBytes := c.Decrypt(unbase64)
 	return string(decryptedBytes[:]), nil
-}
-
-// DecryptStream is to decrypt blocks from reader, write results into writer
-func (c *Crypt) DecryptStream(reader io.Reader, writer io.Writer) error {
-	buf := make([]byte, aes.BlockSize)
-	for {
-		_, err := io.ReadFull(reader, buf)
-		if err != nil {
-			if err == io.EOF {
-				break
-			} else {
-				return err
-			}
-		}
-		cipher.NewCBCDecrypter(c.cipher, c.iv).CryptBlocks(buf, buf)
-		if _, err = writer.Write(buf); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 // GenerateToEnv is generate an encrypted .env file

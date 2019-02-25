@@ -48,7 +48,7 @@ func init() {
 	}
 }
 
-func setup() *encryption.Crypt {
+func setup() encryption.Crypter {
 	key := os.Getenv("ENC_KEY")
 	iv := os.Getenv("ENC_IV")
 
