@@ -5,10 +5,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
-	"fmt"
-	"strings"
 
-	"github.com/mf-financial/wallet-util/env"
 	"github.com/pkg/errors"
 )
 
@@ -97,33 +94,4 @@ func (c *Crypt) DecryptBase64(base64String string) (string, error) {
 	}
 	decryptedBytes := c.Decrypt(unbase64)
 	return string(decryptedBytes[:]), nil
-}
-
-// GenerateToEnv is generate an encrypted .env file
-func (c *Crypt) GenerateToEnv(importFile string) (string, error) {
-	data, err := env.ImportData(importFile)
-	if err != nil {
-		fmt.Printf("failed to call env.ImportData(%s) error: %s\n", importFile, err)
-	}
-
-	envData := c.generateEnvData(data)
-	return env.WriteEnvWithMultipleData(envData, true)
-}
-
-func (c *Crypt) generateEnvData(data []string) map[string][]string {
-	var envData = map[string][]string{}
-
-	for _, row := range data {
-
-		rows := strings.Split(row, " ")
-		envKey := rows[0]                        // envのキーを取得
-		envValues := strings.Split(rows[1], ",") // envの値を取得（配列の場合はカンマ区切り）
-
-		encryptedData := make([]string, 0, len(envValues))
-		for _, envValue := range envValues {
-			encryptedData = append(encryptedData, c.EncryptBase64(envValue))
-		}
-		envData[envKey] = encryptedData
-	}
-	return envData
 }
