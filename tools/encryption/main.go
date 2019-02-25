@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/mf-financial/cayenne-wallet-util/encryption"
+	"github.com/mf-financial/cayenne-wallet-util/env"
 )
 
 var (
@@ -89,7 +90,7 @@ func main() {
 			return
 		}
 
-		fileName, err := crypt.GenerateToEnv(*targetFile)
+		fileName, err := env.Generate(crypt, *targetFile)
 		if err != nil {
 			fmt.Printf("failed to call crypt.ConvertToEnv(%s) error: %s\n", *targetFile, err)
 			return
