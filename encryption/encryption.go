@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mf-financial/wallet-util/env"
+	"github.com/mf-financial/cayenne-wallet-util/env"
 	"github.com/pkg/errors"
 )
 
