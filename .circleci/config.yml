@@ -8,16 +8,31 @@ jobs:
     steps:
     - checkout
     - run: git branch -u origin/${CIRCLE_BRANCH}
-    - run: go get -u -d -t -v ./...
-    - run: go get -u github.com/client9/misspell/cmd/misspell
-    - run: go get -u github.com/gordonklaus/ineffassign
     - run: go get github.com/securego/gosec/cmd/gosec/...
-    - run: go fmt `go list ./... | grep -v "/vendor/"`
-    - run: go vet `go list ./... | grep -v "/vendor/"`
-    - run: misspell `find . -name "*.go" | grep -v "/vendor/"`
-    - run: ineffassign .
-    - run: gosec ./...
-    - run: go test -v ./...
+    - run:
+        name: set environment variable
+        command: |
+          echo 'export GO111MODULE=on' >> $BASH_ENV
+          source $BASH_ENV
+    - run:
+        name: go get
+        command: |
+          go mod tidy
+          go mod verify
+          go get -u github.com/client9/misspell/cmd/misspell
+          go get -u github.com/gordonklaus/ineffassign
+    - run:
+        name: static analysises
+        command: |
+          go fmt `go list ./... | grep -v "/vendor/"`
+          go vet `go list ./... | grep -v "/vendor/"`
+          misspell `find . -name "*.go" | grep -v "/vendor/"`
+          ineffassign .
+          gosec ./...
+    - run:
+        name: go bitcoin api test
+        command: |
+          go test -v ./...
 workflows:
   version: 2
   build:
