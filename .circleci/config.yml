@@ -2,7 +2,7 @@ version: 2
 jobs:
   go-lint:
     docker:
-    - image: circleci/golang:1.11.5
+    - image: circleci/golang:1.12
 
     working_directory: /go/src/github.com/mf-financial/cayenne-wallet-util
     steps:
