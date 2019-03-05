@@ -17,6 +17,7 @@ jobs:
     - run:
         name: go get
         command: |
+          go get -u -d -v ./...
           go mod tidy
           go mod verify
           go get -u github.com/client9/misspell/cmd/misspell
