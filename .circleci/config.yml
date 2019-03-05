@@ -8,7 +8,6 @@ jobs:
     steps:
     - checkout
     - run: git branch -u origin/${CIRCLE_BRANCH}
-    - run: go get github.com/securego/gosec/cmd/gosec/...
     - run:
         name: set environment variable
         command: |
@@ -17,6 +16,7 @@ jobs:
     - run:
         name: go get
         command: |
+          go get github.com/securego/gosec/cmd/gosec/...
           go get -u -d -v ./...
           go mod tidy
           go mod verify
