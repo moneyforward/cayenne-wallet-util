@@ -2,12 +2,13 @@ version: 2
 jobs:
   go-lint:
     docker:
-    - image: circleci/golang:1.11.5
+    - image: circleci/golang:1.12
 
     working_directory: /go/src/github.com/mf-financial/cayenne-wallet-util
     steps:
     - checkout
     - run: git branch -u origin/${CIRCLE_BRANCH}
+    - run: go get github.com/securego/gosec/cmd/gosec/...
     - run:
         name: set environment variable
         command: |
@@ -16,7 +17,6 @@ jobs:
     - run:
         name: go get
         command: |
-          go get github.com/securego/gosec/cmd/gosec/...
           go get -u -d -v ./...
           go mod tidy
           go mod verify
