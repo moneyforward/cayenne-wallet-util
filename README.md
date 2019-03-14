@@ -24,7 +24,7 @@ enc -generate -target input.txt
 * Line separation is line feed code(LF)
 * Comma-delimited if value is an array
 
-example test format
+example input text
 ```bash
 ENV_KEY_01 ENV_VALUE_01
 ENV_KEY_02 ENV_VALUE_02,ENV_VALUE_03,ENV_VALUE_04 # value is an array
