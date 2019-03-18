@@ -10,11 +10,11 @@ func TestReadRSAPrivateKeyFromBytes(t *testing.T) {
 	type args struct {
 		bytes []byte
 	}
-	privateFile, err := ioutil.ReadFile("testdata/private.pem")
+	privateFile, err := ioutil.ReadFile("./testdata/private.pem")
 	if err != nil {
 		t.Fatal("failed to read public key file")
 	}
-	textFile, err := ioutil.ReadFile("testdata/test.txt")
+	textFile, err := ioutil.ReadFile("./testdata/test.txt")
 	if err != nil {
 		t.Fatal("failed to read text file")
 	}

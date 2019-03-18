@@ -8,7 +8,7 @@ import (
 )
 
 func BenchmarkSignRSAPSS(b *testing.B) {
-	privateKeyFile, err := ioutil.ReadFile("testdata/private.pem")
+	privateKeyFile, err := ioutil.ReadFile("./testdata/private.pem")
 	if err != nil {
 		b.Fatal("failed to read private key file")
 	}
@@ -29,7 +29,7 @@ func BenchmarkSignRSAPSS(b *testing.B) {
 }
 
 func BenchmarkVerifyRSAPSS(b *testing.B) {
-	privateKeyFile, err := ioutil.ReadFile("testdata/private.pem")
+	privateKeyFile, err := ioutil.ReadFile("./testdata/private.pem")
 	if err != nil {
 		b.Fatal("failed to read private key file")
 	}

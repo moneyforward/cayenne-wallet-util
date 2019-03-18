@@ -13,7 +13,7 @@ func TestNewRSASignatureWithPublicKey(t *testing.T) {
 	type args struct {
 		publicKey *rsa.PublicKey
 	}
-	publicKeyFile, err := ioutil.ReadFile("testdata/public.pem")
+	publicKeyFile, err := ioutil.ReadFile("./testdata/public.pem")
 	if err != nil {
 		t.Fatal("failed to read public key file")
 	}
@@ -59,7 +59,7 @@ func TestNewRSASignatureWithPrivatekey(t *testing.T) {
 	type args struct {
 		privateKey *rsa.PrivateKey
 	}
-	privateKeyFile, err := ioutil.ReadFile("testdata/private.pem")
+	privateKeyFile, err := ioutil.ReadFile("./testdata/private.pem")
 	if err != nil {
 		t.Fatal("failed to read private key file")
 	}
@@ -106,7 +106,7 @@ func TestRSASignature_Sign(t *testing.T) {
 		publicKey  *rsa.PublicKey
 		privatekey *rsa.PrivateKey
 	}
-	privateKeyFile, err := ioutil.ReadFile("testdata/private.pem")
+	privateKeyFile, err := ioutil.ReadFile("./testdata/private.pem")
 	if err != nil {
 		t.Fatal("failed to read private key file")
 	}
@@ -155,7 +155,7 @@ func TestRSASignature_Verify(t *testing.T) {
 		publicKey  *rsa.PublicKey
 		privatekey *rsa.PrivateKey
 	}
-	privateKeyFile, err := ioutil.ReadFile("testdata/private.pem")
+	privateKeyFile, err := ioutil.ReadFile("./testdata/private.pem")
 	if err != nil {
 		t.Fatal("failed to read private key file")
 	}
