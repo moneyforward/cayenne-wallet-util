@@ -27,8 +27,11 @@ type RSASignature struct {
 }
 
 // NewRSASignatureWithPublicKey Initialize RSASignature With PublicKey
-func NewRSASignatureWithPublicKey(publicKey *rsa.PublicKey) Signature {
-	return &RSASignature{publicKey: publicKey}
+func NewRSASignatureWithPublicKey(publicKey *rsa.PublicKey) (Signature, error) {
+	if publicKey == nil {
+		return nil, errors.New("public key is nil")
+	}
+	return &RSASignature{publicKey: publicKey}, nil
 }
 
 // NewRSASignatureWithPrivatekey Initialize RSASignature With PrivateKey
@@ -48,7 +51,11 @@ func (s *RSASignature) Sign(message string) ([]byte, error) {
 		return nil, errors.New("private key is nil")
 	}
 	byteMessage := []byte(message)
-	hashed := rsaHash.Sum(byteMessage)
+	rsaHash.Reset()
+	if _, err := rsaHash.Write(byteMessage); err != nil {
+		return nil, err
+	}
+	hashed := rsaHash.Sum(nil)
 	return rsa.SignPSS(rand.Reader, s.privatekey, rsaCryptoHash, hashed, defaultPssOption)
 }
 
@@ -58,7 +65,11 @@ func (s *RSASignature) Verify(message string, sig []byte) (bool, error) {
 		return false, errors.New("public key is nil")
 	}
 	byteMessage := []byte(message)
-	hashed := rsaHash.Sum(byteMessage)
+	rsaHash.Reset()
+	if _, err := rsaHash.Write(byteMessage); err != nil {
+		return false, err
+	}
+	hashed := rsaHash.Sum(nil)
 	if err := rsa.VerifyPSS(s.publicKey, rsaCryptoHash, hashed, sig, defaultPssOption); err != nil {
 		return false, err
 	}
