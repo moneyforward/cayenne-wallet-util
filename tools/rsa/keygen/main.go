@@ -27,8 +27,13 @@ var (
 // RSAの鍵生成 のためのコマンド。
 // 複数回実行すると鍵が上書きされるので要注意
 // Usage of ./keygen:
+//   -b string
+//         bucket name
 //   -o string
-// 		path to output
+//         parent folder to output (default ".")
+//   -s string
+//         storage type (default "local")
+
 func main() {
 	parseFlag()
 
