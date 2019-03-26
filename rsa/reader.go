@@ -3,6 +3,7 @@ package rsa
 import (
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/pem"
 	"errors"
 	"fmt"
@@ -35,6 +36,15 @@ func ReadRSAPrivateKeyFromBytes(bytes []byte) (*rsa.PrivateKey, error) {
 	return key, nil
 }
 
+// ReadRSAPrivateKeyFromBase64String base64StringからのPrivateKeyの読み込み
+func ReadRSAPrivateKeyFromBase64String(base64String string) (*rsa.PrivateKey, error) {
+	pemBytes, err := base64.StdEncoding.DecodeString(base64String)
+	if err != nil {
+		return nil, err
+	}
+	return ReadRSAPrivateKeyFromBytes(pemBytes)
+}
+
 // ReadRSAPublicKeyFromBytes PublicKeyの読み込み
 func ReadRSAPublicKeyFromBytes(bytes []byte) (*rsa.PublicKey, error) {
 	block, _ := pem.Decode(bytes)
@@ -51,4 +61,13 @@ func ReadRSAPublicKeyFromBytes(bytes []byte) (*rsa.PublicKey, error) {
 	}
 
 	return key, nil
+}
+
+// ReadRSAPublicKeyFromBase64String Base64StringからのPublicKeyの読み込み
+func ReadRSAPublicKeyFromBase64String(base64String string) (*rsa.PublicKey, error) {
+	pemBytes, err := base64.StdEncoding.DecodeString(base64String)
+	if err != nil {
+		return nil, err
+	}
+	return ReadRSAPublicKeyFromBytes(pemBytes)
 }
