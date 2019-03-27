@@ -2,8 +2,13 @@
 ###############################################################################
 # Build on local
 ###############################################################################
-bld:
+bld-enc:
 	go build -i -v -o ${GOPATH}/bin/enc ./tools/encryption/main.go
+
+bld-keygen:
+	go build -i -v -o ${GOPATH}/bin/keygen ./tools/rsa/keygen/main.go
+
+bld: bld-enc bld-keygen
 
 crypt-env:
 	@if [ ! -e "encrypt_key.env" ]; then \
