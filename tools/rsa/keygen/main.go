@@ -2,26 +2,29 @@ package main
 
 import (
 	"context"
+	crypto "crypto/rsa"
 	"errors"
 	"flag"
 	"fmt"
 	"path/filepath"
 	"strings"
 
-	"github.com/mf-financial/cayenne-wallet-util/storage"
-
 	"github.com/mf-financial/cayenne-wallet-util/rsa"
+	"github.com/mf-financial/cayenne-wallet-util/storage"
 )
 
 const (
-	privateFileName = "private.pem"
-	publicFileName  = "public.pem"
+	extensionTxt    = "txt"
+	extensionPem    = "pem"
+	privateFileName = "private"
+	publicFileName  = "public"
 )
 
 var (
 	parentFolderPath string
 	storageType      string
 	bucketName       string
+	generateType     string
 )
 
 // RSAの鍵生成 のためのコマンド。
@@ -33,6 +36,8 @@ var (
 //         parent folder to output (default ".")
 //   -s string
 //         storage type (default "local")
+//   -g string
+//         generate type (default "byte")
 
 func main() {
 	parseFlag()
@@ -43,8 +48,8 @@ func main() {
 		return
 	}
 	publicKey := rsa.GeneratePublickey(privateKey)
-	privateBytes := rsa.EncodePrivateKeyToPem(privateKey)
-	publicBytes := rsa.EncodePublicKeyToPem(publicKey)
+	privateBytes := encodePrivateKey(privateKey)
+	publicBytes := encodePublicKey(publicKey)
 
 	uploader, err := getUploader()
 	if err != nil {
@@ -72,7 +77,30 @@ func parseFlag() {
 	flag.StringVar(&parentFolderPath, "o", ".", "parent folder to output")
 	flag.StringVar(&storageType, "s", "local", "storage type")
 	flag.StringVar(&bucketName, "b", "", "bucket name")
+	flag.StringVar(&generateType, "g", "", "generate type")
 	flag.Parse()
+}
+
+func encodePublicKey(publicKey *crypto.PublicKey) []byte {
+	switch strings.ToLower(generateType) {
+	case "string":
+		return []byte(rsa.EncodePublicKeyToPemBase64String(publicKey))
+	case "byte":
+		return rsa.EncodePublicKeyToPem(publicKey)
+	default:
+		return rsa.EncodePublicKeyToPem(publicKey)
+	}
+}
+
+func encodePrivateKey(privateKey *crypto.PrivateKey) []byte {
+	switch strings.ToLower(generateType) {
+	case "string":
+		return []byte(rsa.EncodePrivateKeyToPemBase64String(privateKey))
+	case "byte":
+		return rsa.EncodePrivateKeyToPem(privateKey)
+	default:
+		return rsa.EncodePrivateKeyToPem(privateKey)
+	}
 }
 
 func getUploader() (storage.Uploader, error) {
@@ -87,18 +115,21 @@ func getUploader() (storage.Uploader, error) {
 }
 
 func getUploadPath() (privatePath string, publicPath string, err error) {
+
+	privateFullFileName, publicFullFileName := getFullFileName()
 	if parentFolderPath == "" {
-		return privateFileName, publicFileName, nil
+		return privateFullFileName, publicFullFileName, nil
 	}
+
 	switch strings.ToLower(storageType) {
 	case "gcs":
-		return fmt.Sprintf("%s/%s", parentFolderPath, privateFileName), fmt.Sprintf("%s/%s", parentFolderPath, publicFileName), nil
+		return fmt.Sprintf("%s/%s", parentFolderPath, privateFullFileName), fmt.Sprintf("%s/%s", parentFolderPath, publicFullFileName), nil
 	case "local":
-		privateFullPath, err := filepath.Abs(fmt.Sprintf("%s/%s", parentFolderPath, privateFileName))
+		privateFullPath, err := filepath.Abs(fmt.Sprintf("%s/%s", parentFolderPath, privateFullFileName))
 		if err != nil {
 			return "", "", err
 		}
-		publicFullPath, err := filepath.Abs(fmt.Sprintf("%s/%s", parentFolderPath, publicFileName))
+		publicFullPath, err := filepath.Abs(fmt.Sprintf("%s/%s", parentFolderPath, publicFullFileName))
 		if err != nil {
 			return "", "", err
 		}
@@ -107,4 +138,21 @@ func getUploadPath() (privatePath string, publicPath string, err error) {
 	default:
 		return "", "", nil
 	}
+}
+
+func getFullFileName() (string, string) {
+
+	var privateFullFileName, publicFullFileName string
+	switch strings.ToLower(generateType) {
+	case "string":
+		privateFullFileName = fmt.Sprintf("%s.%s", privateFileName, extensionTxt)
+		publicFullFileName = fmt.Sprintf("%s.%s", publicFileName, extensionTxt)
+	case "byte":
+		privateFullFileName = fmt.Sprintf("%s.%s", privateFileName, extensionPem)
+		publicFullFileName = fmt.Sprintf("%s.%s", publicFileName, extensionPem)
+	default:
+		privateFullFileName = fmt.Sprintf("%s.%s", privateFileName, extensionPem)
+		publicFullFileName = fmt.Sprintf("%s.%s", publicFileName, extensionPem)
+	}
+	return privateFullFileName, publicFullFileName
 }
