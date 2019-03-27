@@ -2,15 +2,15 @@ package main
 
 import (
 	"context"
+	crypto "crypto/rsa"
 	"errors"
 	"flag"
 	"fmt"
 	"path/filepath"
 	"strings"
 
-	"github.com/mf-financial/cayenne-wallet-util/storage"
-
 	"github.com/mf-financial/cayenne-wallet-util/rsa"
+	"github.com/mf-financial/cayenne-wallet-util/storage"
 )
 
 const (
@@ -22,6 +22,7 @@ var (
 	parentFolderPath string
 	storageType      string
 	bucketName       string
+	generateType     string
 )
 
 // RSAの鍵生成 のためのコマンド。
@@ -33,6 +34,8 @@ var (
 //         parent folder to output (default ".")
 //   -s string
 //         storage type (default "local")
+//   -g string
+//         generate type (default "byte")
 
 func main() {
 	parseFlag()
@@ -43,8 +46,8 @@ func main() {
 		return
 	}
 	publicKey := rsa.GeneratePublickey(privateKey)
-	privateBytes := rsa.EncodePrivateKeyToPem(privateKey)
-	publicBytes := rsa.EncodePublicKeyToPem(publicKey)
+	privateBytes := EncodePrivateKey(privateKey)
+	publicBytes := EncodePublicKey(publicKey)
 
 	uploader, err := getUploader()
 	if err != nil {
@@ -72,7 +75,30 @@ func parseFlag() {
 	flag.StringVar(&parentFolderPath, "o", ".", "parent folder to output")
 	flag.StringVar(&storageType, "s", "local", "storage type")
 	flag.StringVar(&bucketName, "b", "", "bucket name")
+	flag.StringVar(&generateType, "g", "", "generate type")
 	flag.Parse()
+}
+
+func EncodePublicKey(publicKey *crypto.PublicKey) []byte {
+	switch strings.ToLower(generateType) {
+	case "string":
+		return []byte(rsa.EncodePublicKeyToPemBase64String(publicKey))
+	case "byte":
+		return rsa.EncodePublicKeyToPem(publicKey)
+	default:
+		return rsa.EncodePublicKeyToPem(publicKey)
+	}
+}
+
+func EncodePrivateKey(privateKey *crypto.PrivateKey) []byte {
+	switch strings.ToLower(generateType) {
+	case "string":
+		return []byte(rsa.EncodePrivateKeyToPemBase64String(privateKey))
+	case "byte":
+		return rsa.EncodePrivateKeyToPem(privateKey)
+	default:
+		return rsa.EncodePrivateKeyToPem(privateKey)
+	}
 }
 
 func getUploader() (storage.Uploader, error) {
