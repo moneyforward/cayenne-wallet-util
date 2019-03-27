@@ -14,8 +14,10 @@ import (
 )
 
 const (
-	privateFileName = "private.pem"
-	publicFileName  = "public.pem"
+	extensionTxt    = "txt"
+	extensionPem    = "pem"
+	privateFileName = "private"
+	publicFileName  = "public"
 )
 
 var (
@@ -46,8 +48,8 @@ func main() {
 		return
 	}
 	publicKey := rsa.GeneratePublickey(privateKey)
-	privateBytes := EncodePrivateKey(privateKey)
-	publicBytes := EncodePublicKey(publicKey)
+	privateBytes := encodePrivateKey(privateKey)
+	publicBytes := encodePublicKey(publicKey)
 
 	uploader, err := getUploader()
 	if err != nil {
@@ -79,7 +81,7 @@ func parseFlag() {
 	flag.Parse()
 }
 
-func EncodePublicKey(publicKey *crypto.PublicKey) []byte {
+func encodePublicKey(publicKey *crypto.PublicKey) []byte {
 	switch strings.ToLower(generateType) {
 	case "string":
 		return []byte(rsa.EncodePublicKeyToPemBase64String(publicKey))
@@ -90,7 +92,7 @@ func EncodePublicKey(publicKey *crypto.PublicKey) []byte {
 	}
 }
 
-func EncodePrivateKey(privateKey *crypto.PrivateKey) []byte {
+func encodePrivateKey(privateKey *crypto.PrivateKey) []byte {
 	switch strings.ToLower(generateType) {
 	case "string":
 		return []byte(rsa.EncodePrivateKeyToPemBase64String(privateKey))
@@ -113,18 +115,21 @@ func getUploader() (storage.Uploader, error) {
 }
 
 func getUploadPath() (privatePath string, publicPath string, err error) {
+
+	privateFullFileName, publicFullFileName := getFullFileName()
 	if parentFolderPath == "" {
-		return privateFileName, publicFileName, nil
+		return privateFullFileName, publicFullFileName, nil
 	}
+
 	switch strings.ToLower(storageType) {
 	case "gcs":
-		return fmt.Sprintf("%s/%s", parentFolderPath, privateFileName), fmt.Sprintf("%s/%s", parentFolderPath, publicFileName), nil
+		return fmt.Sprintf("%s/%s", parentFolderPath, privateFullFileName), fmt.Sprintf("%s/%s", parentFolderPath, publicFullFileName), nil
 	case "local":
-		privateFullPath, err := filepath.Abs(fmt.Sprintf("%s/%s", parentFolderPath, privateFileName))
+		privateFullPath, err := filepath.Abs(fmt.Sprintf("%s/%s", parentFolderPath, privateFullFileName))
 		if err != nil {
 			return "", "", err
 		}
-		publicFullPath, err := filepath.Abs(fmt.Sprintf("%s/%s", parentFolderPath, publicFileName))
+		publicFullPath, err := filepath.Abs(fmt.Sprintf("%s/%s", parentFolderPath, publicFullFileName))
 		if err != nil {
 			return "", "", err
 		}
@@ -133,4 +138,21 @@ func getUploadPath() (privatePath string, publicPath string, err error) {
 	default:
 		return "", "", nil
 	}
+}
+
+func getFullFileName() (string, string) {
+
+	var privateFullFileName, publicFullFileName string
+	switch strings.ToLower(generateType) {
+	case "string":
+		privateFullFileName = fmt.Sprintf("%s.%s", privateFileName, extensionTxt)
+		publicFullFileName = fmt.Sprintf("%s.%s", publicFileName, extensionTxt)
+	case "byte":
+		privateFullFileName = fmt.Sprintf("%s.%s", privateFileName, extensionPem)
+		publicFullFileName = fmt.Sprintf("%s.%s", publicFileName, extensionPem)
+	default:
+		privateFullFileName = fmt.Sprintf("%s.%s", privateFileName, extensionPem)
+		publicFullFileName = fmt.Sprintf("%s.%s", publicFileName, extensionPem)
+	}
+	return privateFullFileName, publicFullFileName
 }
