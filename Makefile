@@ -2,6 +2,10 @@
 ###############################################################################
 # Build on local
 ###############################################################################
+
+# 対象環境
+ENV=${env}
+
 bld-enc:
 	go build -i -v -o ${GOPATH}/bin/enc ./tools/encryption/main.go
 
@@ -12,10 +16,13 @@ bld: bld-enc bld-keygen
 
 crypt-env:
 	@if [ ! -e "encrypt_key.env" ]; then \
-		echo "require encrypt_key.env"; exit 1 ; \
+		echo "encrypt_key.envを配置して下さい"; exit 1 ; \
 	fi
 	@if [ ! -e "input.txt" ]; then \
-		echo "require input.txt"; exit 1 ; \
+		echo "input.txtを配置して下さい"; exit 1 ; \
+	fi
+	@if [ -z ${ENV} ]; then \
+		echo "実行時引数env={dev|stg|prod}を指定してください"; exit 1 ; \
 	fi
 
 	. encrypt_key.env
@@ -26,5 +33,5 @@ crypt-env:
 	gcloud kms encrypt --ciphertext-file=encrypt_key.env.enc --plaintext-file=encrypt_key.env --key wallet-env-key --keyring=wallet-build-keyring --location=global
 
 	# GCSへアップロード
-	gsutil cp .env.enc gs://wallet-env-bucket/envfile/.env.enc
-	gsutil cp encrypt_key.env.enc gs://wallet-env-bucket/envfile/encrypt_key.env.enc
+	gsutil cp .env.enc gs://cayenne-wallet-$(ENV)-env-bucket/envfile/.env.enc
+	gsutil cp encrypt_key.env.enc gs://cayenne-wallet-$(ENV)-env-bucket/envfile/encrypt_key.env.enc
